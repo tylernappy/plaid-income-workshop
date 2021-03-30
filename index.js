@@ -51,7 +51,7 @@ app.get('/retrieve-income', async (req, res) => {
     res.sendStatus(200);
 });
 
-// Uncomment this route if in Development of Production
+// Uncomment this route if in Development or Production
 // app.post('/plaid-webhook', async (req, res) => {
 //   const { income_verification_id: incomeVerificationId } = req.body
 //   incomeHandler(incomeVerificationId);

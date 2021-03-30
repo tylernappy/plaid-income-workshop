@@ -3,11 +3,14 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+
 const path = require('path');
 const util = require('util');
 
 const PORT = process.env.PORT || 3000;
-const WEBHOOK = 'https://testwebhook.com/';
+const WEBHOOK = 'https://example.com/plaid-webhook';
 let INCOME_VERIFICATION_ID;
 
 const plaid = require('plaid');
@@ -41,19 +44,32 @@ app.get('/create-link-token', async (req, res) => {
     res.json({ linkToken });
 });
 
+// Uncomment this route if in Sandbox
 app.get('/retrieve-income', async (req, res) => {
-    const incomeSummary = await plaidClient.getSummary(INCOME_VERIFICATION_ID);
-    console.log('-----------------');
-    console.log('Income summary: ');
-    console.log(util.inspect(incomeSummary, false, null, true));
-
-    const paystubSummary = await plaidClient.getPaystub(INCOME_VERIFICATION_ID);
-    console.log('-----------------');
-    console.log('Paystub summary: ');
-    console.log(paystubSummary);
+    incomeHandler(INCOME_VERIFICATION_ID);
 
     res.sendStatus(200);
 });
+
+// Uncomment this route if in Development of Production
+// app.post('/plaid-webhook', async (req, res) => {
+//   const { income_verification_id: incomeVerificationId } = req.body
+//   incomeHandler(incomeVerificationId);
+//
+//   res.sendStatus(200);
+// });
+
+const incomeHandler = async (incomeVerificationId) => {
+  const incomeSummary = await plaidClient.getSummary(incomeVerificationId);
+  console.log('-----------------');
+  console.log('Income summary: ');
+  console.log(util.inspect(incomeSummary, false, null, true));
+
+  const paystubSummary = await plaidClient.getPaystub(incomeVerificationId);
+  console.log('-----------------');
+  console.log('Paystub summary: ');
+  console.log(paystubSummary);
+};
 
 app.listen(PORT, () => {
     console.log('listening on port', PORT);

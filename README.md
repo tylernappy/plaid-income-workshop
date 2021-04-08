@@ -1,4 +1,4 @@
-# Plaid Income Switch Workshop
+# Plaid Income Workshop
 
 ## Local Development
 
